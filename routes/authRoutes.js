@@ -6,6 +6,81 @@ const axios = require("axios");
 const router = express.Router();
 const API_KEY = "AIzaSyBAPK_p4VMQAR526ivYOiYAU-04E-uWBE0";
 
+router.get("/saved-books", async (req, res) => {
+  if (!req.session.user) {
+      return res.redirect("/auth/login"); // Redirigir si no ha iniciado sesión
+  }
+
+  const userId = req.session.user.id;
+
+  try {
+      const result = await pool.query(
+          "SELECT * FROM libros_guardados WHERE usuario_id = $1",
+          [userId]
+      );
+      res.render("savedBooks", { books: result.rows });
+  } catch (error) {
+      console.error("Error al obtener los libros guardados:", error);
+      res.status(500).send("Error al obtener los libros.");
+  }
+});
+
+router.post("/save", async (req, res) => {
+  if (!req.session.user) {
+      return res.status(401).send("Debes iniciar sesión para guardar libros.");
+  }
+
+  const { title, author, image } = req.body;
+  const userId = req.session.user.id; // ID del usuario autenticado
+
+  try {
+      await pool.query(
+          "INSERT INTO libros_guardados (usuario_id, titulo, autor, imagen_url) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING",
+          [userId, title, author, image]
+      );
+      res.redirect("/auth/dashboard"); // Redirigir después de guardar
+  } catch (error) {
+      console.error("Error al guardar el libro:", error);
+      res.status(500).send("Error al guardar el libro.");
+  }
+});
+
+
+router.get("/saved-books", async (req, res) => {
+  if (!req.session.user) {
+      return res.redirect("/auth/login");
+  }
+
+  try {
+      const result = await pool.query("SELECT * FROM libros_guardados WHERE usuario_id = $1", [req.session.user.id]);
+      res.render("savedBooks", { books: result.rows });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al obtener los libros guardados.");
+  }
+});
+
+
+router.post("/save", async (req, res) => {
+  if (!req.session.user) {
+      return res.status(401).send("Debes iniciar sesión para guardar libros.");
+  }
+
+  const { title, author, image } = req.body;
+  const userId = req.session.user.id;
+
+  try {
+      await pool.query(
+          "INSERT INTO libros_guardados (usuario_id, titulo, autor, imagen_url) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING",
+          [userId, title, author, image]
+      );
+      res.redirect("/auth/saved-books");
+  } catch (error) {
+      console.error(error);
+      res.status(500).send("Error al guardar el libro.");
+  }
+});
+
 // Ruta para buscar libros en Google Books
 router.get("/search", async (req, res) => {
   const query = req.query.q;

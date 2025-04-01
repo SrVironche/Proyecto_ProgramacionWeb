@@ -4,18 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados de la búsqueda</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 90%;
+            max-width: 900px;
+        }
+
+        li {
+            background-color: #1e1e1e;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        img {
+            max-width: 50px;
+            border-radius: 5px;
+            margin-left: 15px;
+        }
+
+        form {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        button {
+            background-color: #333;
+            color: #e0e0e0;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #666;
+        }
+
+        a {
+            color: #bbb;
+            text-decoration: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #666;
+            color: #fff;
+        }
+
+        p {
+            color: #aaa;
+        }
+    </style>
 </head>
 <body>
     <h1>Resultados de la búsqueda</h1>
-    
+
     <% if (books && books.length > 0) { %>
         <ul>
             <% books.forEach(book => { %>
                 <li>
-                    <strong><%= book.volumeInfo.title %></strong> - 
-                    <%= book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Autor desconocido" %>
+                    <div>
+                        <strong><%= book.volumeInfo.title %></strong><br>
+                        Autor(es): <%= book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Desconocido" %>
+                    </div>
+                    <img src="<%= book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : '' %>" alt="Portada">
+                    
+                    <form action="/auth/save" method="POST">
+                        <input type="hidden" name="title" value="<%= book.volumeInfo.title %>">
+                        <input type="hidden" name="author" value="<%= book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Desconocido' %>">
+                        <input type="hidden" name="image" value="<%= book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : '' %>">
+                        <button type="submit">Guardar</button>
+                    </form>
                 </li>
-            <% }) %>
+            <% }); %>
         </ul>
     <% } else { %>
         <p>No se encontraron libros.</p>

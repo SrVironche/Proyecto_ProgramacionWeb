@@ -1,22 +1,66 @@
-<!-- views/dashboard.ejs -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h2 {
+      color: #ffffff;
+    }
+    a, button {
+      background-color: #333;
+      color: #fff;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    a:hover, button:hover {
+      background-color: #555;
+    }
+    input {
+      padding: 10px;
+      border: 1px solid #555;
+      background-color: #1e1e1e;
+      color: #fff;
+      border-radius: 5px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+  </style>
 </head>
 <body>
-  <h1>Bienvenido<%= user.username %></h1> <!-- Muestra el nombre de usuario -->
-
-  <p>Este es tu dashboard.</p>
-  <h2>Buscar libros en Google Books</h2>
-<form action="/auth/search" method="GET">
-    <input type="text" name="q" placeholder="Ingrese el título del libro" required>
-    <button type="submit">Buscar</button>
-</form>
-
-
-  <a href="/auth/logout">Cerrar sesión</a>
+  <div class="container">
+    <h1>Bienvenido, <%= user.username %></h1>
+    
+    
+    <h2>Buscar libros en Google Books</h2>
+    <form action="/auth/search" method="GET">
+      <input type="text" name="q" placeholder="Ingrese el título del libro" required>
+      <button type="submit">Buscar</button>
+    </form>
+    
+    <br>
+    <a href="/auth/saved-books"> Ver mis libros guardados</a>
+    <br><br>
+    <br><br>
+    <a href="/auth/logout"> Cerrar sesión</a>
+  </div>
 </body>
 </html>
