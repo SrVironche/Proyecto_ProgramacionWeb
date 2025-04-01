@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Libros</title>
+</head>
+<body>
+    <h1>Buscar Libros</h1>
+
+    <!-- Formulario de búsqueda -->
+    <form action="/auth/search" method="GET">
+        <input type="text" name="q" placeholder="Buscar un libro..." required>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <hr>
+
+    <!-- Mostrar mensajes de error -->
+    <% if (error) { %>
+        <p style="color: red;"><%= error %></p>
+    <% } %>
+
+    <!-- Mostrar resultados de búsqueda -->
+    <ul>
+        <% books.forEach(book => { %>
+            <li>
+                <strong><%= book.volumeInfo.title %></strong><br>
+                Autor(es): <%= book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Desconocido" %><br>
+                <img src="<%= book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : '' %>" alt="Portada">
+            </li>
+        <% }); %>
+    </ul>
+
+</body>
+</html>

@@ -1,22 +1,40 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const pool = require("../models/db");
+const axios = require("axios");
+
 const router = express.Router();
+const API_KEY = "AIzaSyBAPK_p4VMQAR526ivYOiYAU-04E-uWBE0";
+
+// Ruta para buscar libros en Google Books
+router.get("/search", async (req, res) => {
+  const query = req.query.q;
+  if (!query) {
+    return res.status(400).send("Debes proporcionar un término de búsqueda.");
+  }
+
+  try {
+    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${API_KEY}`);
+    res.render("searchResults", { books: response.data.items });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al obtener los libros.");
+  }
+});
+
 
 // Página de registro
 router.get("/register", (req, res) => {
-  res.render("register"); // Asegúrate de que esté renderizando el archivo correcto
+  res.render("register");
 });
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
-  // Validar que los campos no estén vacíos
   if (!username || !email || !password) {
     return res.status(400).send("Todos los campos son requeridos");
   }
 
-  // Verificar si el username ya está en uso
   const userExists = await pool.query("SELECT * FROM usuarios WHERE username = $1", [username]);
 
   if (userExists.rows.length > 0) {
@@ -27,29 +45,27 @@ router.post("/register", async (req, res) => {
 
   try {
     await pool.query("INSERT INTO usuarios (username, email, contrasena) VALUES ($1, $2, $3)", [username, email, hashedPassword]);
-    res.redirect("/auth/login"); // Redirige a la página de login después de registrarse
+    res.redirect("/auth/login");
   } catch (error) {
-    console.error(error); // Muestra el error en la consola para depuración
+    console.error(error);
     res.send("Error al registrar");
   }
 });
 
-
 // Página de login
 router.get("/login", (req, res) => {
-  res.render("login"); // Asegúrate de que esté renderizando el archivo correcto
+  res.render("login");
 });
 
 // Procesar login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   
-  // Modificado para usar 'usuarios' y 'contrasena'
   const user = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
 
   if (user.rows.length > 0 && await bcrypt.compare(password, user.rows[0].contrasena)) {
-    req.session.user = user.rows[0]; // Guarda la sesión del usuario
-    res.redirect("/dashboard"); // Redirige a un dashboard o página principal
+    req.session.user = user.rows[0];
+    res.redirect("/auth/dashboard");
   } else {
     res.send("Credenciales incorrectas");
   }
@@ -58,15 +74,15 @@ router.post("/login", async (req, res) => {
 // Cerrar sesión
 router.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/auth/login"); // Redirige a la página de login después de cerrar sesión
+    res.redirect("/auth/login");
   });
 });
+
 router.get("/dashboard", (req, res) => {
-  // Verificar si el usuario está autenticado
   if (req.session.user) {
-    res.render("dashboard", { user: req.session.user });  // Renderiza la vista de dashboard
+    res.render("dashboard", { user: req.session.user });
   } else {
-    res.redirect("/auth/login");  // Si no está autenticado, redirigir al login
+    res.redirect("/auth/login");
   }
 });
 

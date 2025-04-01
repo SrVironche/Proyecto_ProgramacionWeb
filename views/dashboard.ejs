@@ -7,9 +7,15 @@
   <title>Dashboard</title>
 </head>
 <body>
-  <h1>Bienvenido, <%= user.username %></h1> <!-- Muestra el nombre de usuario -->
+  <h1>Bienvenido<%= user.username %></h1> <!-- Muestra el nombre de usuario -->
 
   <p>Este es tu dashboard.</p>
+  <h2>Buscar libros en Google Books</h2>
+<form action="/auth/search" method="GET">
+    <input type="text" name="q" placeholder="Ingrese el título del libro" required>
+    <button type="submit">Buscar</button>
+</form>
+
 
   <a href="/auth/logout">Cerrar sesión</a>
 </body>

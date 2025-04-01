@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de la búsqueda</title>
+</head>
+<body>
+    <h1>Resultados de la búsqueda</h1>
+    
+    <% if (books && books.length > 0) { %>
+        <ul>
+            <% books.forEach(book => { %>
+                <li>
+                    <strong><%= book.volumeInfo.title %></strong> - 
+                    <%= book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Autor desconocido" %>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>No se encontraron libros.</p>
+    <% } %>
+
+    <a href="/dashboard">Volver al dashboard</a>
+</body>
+</html>
